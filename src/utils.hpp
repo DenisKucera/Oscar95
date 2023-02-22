@@ -126,22 +126,22 @@ void gpio_control_task(void* arg){
             case 19:
             //motor_speed[3] = 0;
             printf("motor3 stalled!!!\n");
-            vTaskDelay(portTICK_PERIOD_MS / 1000);
+            //vTaskDelay(portTICK_PERIOD_MS / 1000);
             break;
             case 21:
             //motor_speed[2] = 0;    
             printf("motor2 stalled!!!\n");
-            vTaskDelay(portTICK_PERIOD_MS / 1000);
+            //vTaskDelay(portTICK_PERIOD_MS / 1000);
             break;
             case 22:
             //motor_speed[1] = 0;    
             printf("motor1 stalled!!!\n");
-            vTaskDelay(portTICK_PERIOD_MS / 1000);
+            //vTaskDelay(portTICK_PERIOD_MS / 1000);
             break;
             case 23:
             //motor_speed[0] = 0;    
             printf("motor0 stalled!!!\n");
-            vTaskDelay(portTICK_PERIOD_MS / 1000);
+            //vTaskDelay(portTICK_PERIOD_MS / 1000);
             break;
         }
     }

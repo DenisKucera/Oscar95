@@ -130,34 +130,34 @@ static void initGridUi(){
     uint32_t data =0;
 
     int result = driver.get_PWMCONF(data);
-    if (result != 0){
-        printf("PWMCONF driveru %d : ERROR  %d\n", driver.address(), result);}
-    else{
-        printf("PWMCONF driveru %d =  %08X\n", driver.address(), data);}
+    if (result != 0)
+        printf("PWMCONF driveru %d : ERROR  %d\n", driver.address(), result);
+    else
+        printf("PWMCONF driveru %d =  %08X\n", driver.address(), data);
     vTaskDelay(50 / portTICK_PERIOD_MS);
     result = driver.get_DRV_STATUS(data);
-    if (result != 0){
-        printf("DRV_STATUS driveru %d : ERROR  %d\n", driver.address(), result);}
-    else{
-        printf("DRV_STATUS driveru %d =  %08X\n", driver.address(), data);}
+    if (result != 0)
+        printf("DRV_STATUS driveru %d : ERROR  %d\n", driver.address(), result);
+    else
+        printf("DRV_STATUS driveru %d =  %08X\n", driver.address(), data);
     vTaskDelay(50 / portTICK_PERIOD_MS);
     result = driver.read_gconf(data);
-    if (result != 0){
-        printf("GCONF %d : ERROR  %d\n", driver.address(), result);}
-    else{
-        printf("GCONF %d =  %08X\n", driver.address(), data);}
+    if (result != 0)
+        printf("GCONF %d : ERROR  %d\n", driver.address(), result);
+    else
+        printf("GCONF %d =  %08X\n", driver.address(), data);
     vTaskDelay(50 / portTICK_PERIOD_MS);
     result = driver.get_CHOPCONF(data);
-    if (result != 0){
-        printf("CHOPCONF %d : ERROR  %d\n", driver.address(), result);}
-    else{
-        printf("CHOPCONF %d =  %08X\n", driver.address(), data);}
+    if (result != 0)
+        printf("CHOPCONF %d : ERROR  %d\n", driver.address(), result);
+    else
+        printf("CHOPCONF %d =  %08X\n", driver.address(), data);
     vTaskDelay(50 / portTICK_PERIOD_MS);
     result = driver.get_GSTAT(data);
-    if (result != 0){
-        printf("GSTAT %d : ERROR  %d\n", driver.address(), result);}
-    else{
-        printf("GSTAT %d =  %08X\n", driver.address(), data);}
+    if (result != 0)
+        printf("GSTAT %d : ERROR  %d\n", driver.address(), result);
+    else
+        printf("GSTAT %d =  %08X\n", driver.address(), data);
     vTaskDelay(50 / portTICK_PERIOD_MS);
     driver.set_speed(0);                      // otáčení motoru se nastavuje zápisem rychlosti do driveru přes Uart
     driver.set_IHOLD_IRUN (16, 32);             // proud IHOLD (při stání) =8/32, IRUN (při běhu)= 8/32 (8/32 je minimum, 16/32 je maximum pro dluhodobější provoz) 

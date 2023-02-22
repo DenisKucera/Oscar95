@@ -118,7 +118,7 @@ int xyzw_parsing(int i, char array[]){
                             break;
                         }
                         pos = pos * dir;
-                        dir = 0;
+                        //dir = 0;
                     }
                     if(array[i+e]==' ' && (dir == 1)){
                         switch(e){
@@ -136,7 +136,7 @@ int xyzw_parsing(int i, char array[]){
                             break;
                         }    
                         pos = pos * dir;
-                        dir = 0;
+                        //dir = 0;
                     }
                     vTaskDelay(100 / portTICK_PERIOD_MS);
                 }
@@ -169,11 +169,11 @@ int speed_parsing(int i, char array[]){
                                 //printf("chyba pri zadavani\n");
                             break;      
                         }
-                        return_speed = round(speed*speed_const);
                         //printf("spd %d\n",return_speed);
                     }  
                     vTaskDelay(portTICK_PERIOD_MS / 100);  
                 }
+                return_speed = round(speed*speed_const);
     return return_speed;
 }             
 ////////////////////////TASK G CODE PARSERU/////////////////////
@@ -190,7 +190,7 @@ void g_code_parser(void* param){
 
                 int res = usb_uart.read();
 
-                if(res > 9){
+                if((res > 31) || (res==10)){
                     sprintf(cr, "%c", res);
                     strncat(g_code, cr, 1);
                 }
@@ -304,14 +304,14 @@ void g_code_parser(void* param){
                     case 'F':{
                         printf("Nasel F\n");
                         int speed=speed_parsing(i, g_code);
-                        //printf("speed %d\n",speed);
-                        for(int q=0; q<4; q++){
+                        printf("speed %d\n",speed);
+                        /*for(int q=0; q<4; q++){
                             motor_speed[q]=(direction[q]*speed);
                             printf("set speed %d\n",motor_speed[q].load());
                             //printf("speed %d\n",speed);
                             speed_done=true;
                             vTaskDelay(portTICK_PERIOD_MS /50);
-                        }
+                        }*/
                         break;}  
                     case '%':{
                         printf("konec g-codu\n");
@@ -319,61 +319,54 @@ void g_code_parser(void* param){
                         break;}       
                 }
             }
-            printf("jsem tady\n");
-            int temp[8];
-            int count=0;
+            /*int temp[8];
                 for(int q=0; q<4; q++){
                     temp[q]=h_limits[q];
                     temp[q+1]=l_limits[q];
                 }
-                //bool motors_done[4]={0,0,0,0};
+                bool set[4]={0,0,0,0};
                 while(speed_done){
                    for(int q=0; q<4; q++){
                         if(temp[q]<h_limits[q] || temp[q+1]<l_limits[q] || direction[q]==0){
-                            /*if(!set[q]){
+                            if(!set[q]){
                                 switch(q){
                                     case 0:{
                                         set[q]=true;
-                                        motor_speed[q]=0;
-                                        count++;   
+                                        motor_speed[q]=0; 
                                     break;
                                     }
                                     case 1:{
                                         set[q]=true;
                                         motor_speed[q]=0;
-                                        count++;   
                                     break;
                                     }
                                     case 2:{
                                         set[q]=true;
                                         motor_speed[q]=0;
-                                        count++;   
                                     break;
                                     }
                                     case 3:{
                                         set[q]=true;
-                                        motor_speed[q]=0;
-                                        count++;   
+                                        motor_speed[q]=0;  
                                     break;
                                     }
                                 } 
-                        }*/
-                         vTaskDelay(portTICK_PERIOD_MS / 10);
+                        }
                    } 
-                   if(count==4){speed_done=false;}
+                   if(set[0]==true && set[1]==true && set[2]==true && set[3]==true){speed_done=false;}
+                   if(motor_speed[0]==0 && motor_speed[1]==0 && motor_speed[2]==0 && motor_speed[3]==0){speed_done=false;}
                    vTaskDelay(portTICK_PERIOD_MS / 100);
                 }
-            }
+            }*/
             printf(g_code);
             printf("\n");
 
             /*printf("%d", int(strlen(msg)));
-            printf("\n");*/
-            
+            printf("\n");*/ 
+        }
+     vTaskDelay(100/portTICK_PERIOD_MS);   
     }
-
-
-     vTaskDelay(500/portTICK_PERIOD_MS);   
+    //vTaskDelay(100/portTICK_PERIOD_MS); 
     }
 }
    /*vector<int> reading_gcode_stream(void){
