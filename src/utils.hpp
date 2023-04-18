@@ -77,7 +77,7 @@ void step_pulse_init(const uint32_t freq_hz, const ledc_timer_t timer_num, const
         }
     }*/
 
-static QueueHandle_t switch_evt_queue = NULL;
+static QueueHandle_t switch_evt_queue;
 
 static void IRAM_ATTR switch_intr_isr(void *arg)
 {
@@ -87,25 +87,24 @@ static void IRAM_ATTR switch_intr_isr(void *arg)
 
 void switch_control_task(void *param)
 {
-    switch_evt_queue = xQueueCreate(1, sizeof(int));
     int pinNumber, count = 0, curr_count=0;
     while (xQueueReceive(switch_evt_queue, &pinNumber, portMAX_DELAY))
     {
         count++;
         if(count==curr_count+2){
             count=curr_count;
-            gpio_set_level(LED, 0); //Oscar#2 1
-            //beep(2, 300, 1800);
+            gpio_set_level(LED, LED_ON_OFF); //Oscar#2 1
+            beep(2, 300, 1800);
             esp_restart();
             vTaskDelay(1000 / portTICK_PERIOD_MS);
         }
         else{
             printf("GPIO %d was pressed %d times. The state is %d\n", pinNumber, count, gpio_get_level(ON_OFF_SWITCH));
-            gpio_set_level(LED, 1); //Oscar#2 0
-            //beep(1, 1000, 1800);
+            gpio_set_level(LED, PWR_ON_OFF); //Oscar#2 0
+            beep(1, 1000, 1800);
             curr_count=count;
             count++;
-            power_on_off=true; //Oscar#2 false
+            power_on_off=PWR_ON_OFF; //Oscar#2 false
             vTaskDelay(1000 / portTICK_PERIOD_MS);
         }
     }
@@ -124,24 +123,28 @@ void gpio_control_task(void* arg){
     while(xQueueReceive(gpio_evt_queue, &io_num, portMAX_DELAY)){
         switch(io_num){
             case 19:
-            //motor_speed[3] = 0;
+            motor_speed[3] = 0;
             printf("motor3 stalled!!!\n");
-            //vTaskDelay(portTICK_PERIOD_MS / 1000);
+            stall[3]=true;
+            vTaskDelay(portTICK_PERIOD_MS / 1000);
             break;
             case 21:
-            //motor_speed[2] = 0;    
+            motor_speed[2] = 0;    
             printf("motor2 stalled!!!\n");
-            //vTaskDelay(portTICK_PERIOD_MS / 1000);
+            stall[2]=true;
+            vTaskDelay(portTICK_PERIOD_MS / 1000);
             break;
             case 22:
-            //motor_speed[1] = 0;    
+            motor_speed[1] = 0;    
             printf("motor1 stalled!!!\n");
-            //vTaskDelay(portTICK_PERIOD_MS / 1000);
+            vTaskDelay(portTICK_PERIOD_MS / 1000);
+            stall[1]=true;
             break;
             case 23:
-            //motor_speed[0] = 0;    
+            motor_speed[0] = 0;    
             printf("motor0 stalled!!!\n");
-            //vTaskDelay(portTICK_PERIOD_MS / 1000);
+            stall[0]=true;
+            vTaskDelay(portTICK_PERIOD_MS / 1000);
             break;
         }
     }

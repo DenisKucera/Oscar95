@@ -14,6 +14,7 @@
 #include "driver/pcnt.h"
 #include "esp_attr.h"
 #include "soc/gpio_sig_map.h"
+#include <atomic>
 
 #define TAG "spiffs"
 using namespace std;
@@ -122,8 +123,8 @@ void pcnt_init(const pcnt_unit_t unit, const gpio_num_t pin)
     
     pcnt_unit_config(&pcnt_config);
 
-    /*pcnt_set_event_value(unit, PCNT_EVT_THRES_1, 100);
-    pcnt_event_enable(unit, PCNT_EVT_THRES_1);*/
+    //pcnt_set_event_value(unit, PCNT_EVT_THRES_0, 100); VYZKOUŠET!!!
+    //pcnt_event_enable(unit, PCNT_EVT_THRES_0);
 
     pcnt_event_enable(unit, PCNT_EVT_H_LIM);
     pcnt_event_enable(unit, PCNT_EVT_L_LIM);
@@ -141,6 +142,8 @@ void pcnt_init(const pcnt_unit_t unit, const gpio_num_t pin)
 
     /* Everything is set up, now go to counting */
     pcnt_counter_resume(unit);
+    pcnt_counter_clear(unit);
+    pcnt_counter_pause(unit);
 }
 
 void pulse(void*pvParameters){
@@ -159,11 +162,11 @@ void pulse(void*pvParameters){
             pcnt_get_counter_value(static_cast<pcnt_unit_t>(evt.unit), &count[evt.unit]);
             printf("Event PCNT unit[%d] count: %d\n", evt.unit,count[evt.unit]);
             if (evt.status & PCNT_STATUS_H_LIM_M) {
-                h_limits[evt.unit]=h_limits[evt.unit]+1;
+                h_limits[evt.unit]=true/*h_limits[evt.unit]+1*/;
                 printf("H_LIM\n");
             }
             if (evt.status & PCNT_STATUS_L_LIM_M) {
-                l_limits[evt.unit]=l_limits[evt.unit]+1;
+                l_limits[evt.unit]=true/*l_limits[evt.unit]+1*/;
                 printf("L_LIM\n");
             }
         } 

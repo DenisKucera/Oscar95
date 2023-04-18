@@ -40,7 +40,7 @@ using namespace std;
 static void initGridUi(){
     using namespace gridui;
     // Initialize WiFi
-    WiFi::startAp("Oscar95#2","");     //esp vytvoří wifi sít
+    WiFi::startAp(WIFI,"");     //esp vytvoří wifi sít  //OSCAR
     // WiFi::connect("Jmeno wifi", "Heslo");    //připojení do místní sítě
     
     // Initialize RBProtocol
@@ -60,13 +60,13 @@ static void initGridUi(){
         rucni_rizeni=true;
      });
     builder.KlesteMinus.onPress([](Button &){
-        if(rucni_rizeni){motor_speed[0]=-speed;}
+        if(rucni_rizeni){motor_speed[0]=speed;}
     });
     builder.KlesteMinus.onRelease([](Button &){
         if(rucni_rizeni){motor_speed[0]=0;}
     });
     builder.KlestePlus.onPress([](Button &){
-        if(rucni_rizeni){motor_speed[0]=speed;}
+        if(rucni_rizeni){motor_speed[0]=-speed;}
     });
     builder.KlestePlus.onRelease([](Button &){
         if(rucni_rizeni){motor_speed[0]=0;}
@@ -178,6 +178,14 @@ static void initGridUi(){
     driver.set_IHOLD_IRUN (iRun, iHold);             //proud IHOLD =0, IRUN = 8/32 (při stání je motor volně otočný)
    }
 
+   bool garbo(){
+    if (LED_ON_OFF == 1) {
+        return !power_on_off;
+    } else {
+        return power_on_off;
+    }
+   }
+
 extern "C" void app_main(void){ 
 
     check_reset();
@@ -203,6 +211,9 @@ extern "C" void app_main(void){
     };
     gpio_config(&buzzer_conf);
 
+    switch_evt_queue = xQueueCreate(1, sizeof(int));
+    gpio_evt_queue = xQueueCreate(10, sizeof(uint32_t));
+
     xTaskCreate(switch_control_task, "switch_Control_Task", 2048, NULL,tskIDLE_PRIORITY, NULL);
 
     gpio_isr_handler_add(ON_OFF_SWITCH,switch_intr_isr,(void*) ON_OFF_SWITCH);
@@ -212,10 +223,10 @@ extern "C" void app_main(void){
         beep(2, 500, 1800);
     }*/
 
-    gpio_set_level(LED,0); //1 pro Oscar#2
+    gpio_set_level(LED,LED_ON_OFF); //1 pro Oscar#2
     power_on_off=gpio_get_level(LED);
     bool once=true;
-    while(!power_on_off){ //bez negace (!)
+    while(garbo()){ //bez (!)
         while(once){
         printf("Oscar95 OFF state\n");
         printf("press button to start!\n");
@@ -248,7 +259,7 @@ extern "C" void app_main(void){
     if(!gpio_get_level(SILOVKA)){
         diag_pin_conf.mode = GPIO_MODE_INPUT;  
         diag_pin_conf.pull_down_en = GPIO_PULLDOWN_DISABLE; 
-        gpio_config(&diag_pin_conf); 
+        gpio_config(&diag_pin_conf);
         gpio_set_level(VCC_IO, 0);              // reset driveru
         vTaskDelay(1000 / portTICK_PERIOD_MS);
         gpio_set_level(VCC_IO, 1); 
@@ -289,22 +300,21 @@ extern "C" void app_main(void){
 
     printf("\n");
     Driver driver0 { drivers_uart, DRIVER_0_ADDRES, ENN_PIN0, PCNT_UNIT_0};
-    initDriver(driver0, 31, 10);
+    initDriver(driver0, 31, 0);
     printf("\n");
     Driver driver1 { drivers_uart, DRIVER_1_ADDRES, ENN_PIN1, PCNT_UNIT_1};
-    initDriver(driver1, 31, 10); 
+    initDriver(driver1, 31, 0); 
     printf("\n");
     Driver driver2 { drivers_uart, DRIVER_2_ADDRES, ENN_PIN2, PCNT_UNIT_2};
-    initDriver(driver2, 31, 10);
+    initDriver(driver2, 31, 0);
     printf("\n");
     Driver driver3 { drivers_uart, DRIVER_3_ADDRES, ENN_PIN3, PCNT_UNIT_3};
-    initDriver(driver3, 31, 10);
+    initDriver(driver3, 31, 0);
     printf("\n");
 
     //TaskHandle_t silovka_init;
     //xTaskCreatePinnedToCore(silovka,"silovka check",4096,NULL,tskIDLE_PRIORITY,&silovka_init,1);
 
-    gpio_evt_queue = xQueueCreate(10, sizeof(uint32_t));
     xTaskCreate(gpio_control_task, "Intr_Control_Task", 2048, NULL, tskIDLE_PRIORITY, NULL);
 
     gpio_isr_handler_add(DIAG_PIN0, gpio_intr_isr, (void*) DIAG_PIN0);
@@ -315,7 +325,7 @@ extern "C" void app_main(void){
     TaskHandle_t pulse_count;
     xTaskCreatePinnedToCore(pulse,"pulse counter",4096,NULL,tskIDLE_PRIORITY,&pulse_count,1);
 
-
+    xTaskCreate(g_code_parser,"parsing task",4096, NULL, tskIDLE_PRIORITY,NULL);
     /*pcnt_set_event_value(PCNT_UNIT_0,PCNT_EVT_H_LIM,10);
     pcnt_set_event_value(PCNT_UNIT_1,PCNT_EVT_H_LIM,10);
     pcnt_set_event_value(PCNT_UNIT_2,PCNT_EVT_H_LIM,10);
@@ -326,20 +336,23 @@ extern "C" void app_main(void){
     pcnt_set_event_value(PCNT_UNIT_2,PCNT_EVT_L_LIM,-10);
     pcnt_set_event_value(PCNT_UNIT_3,PCNT_EVT_L_LIM,-10);*/
 
-    pcnt_counter_clear(PCNT_UNIT_0);
+    /*pcnt_counter_clear(PCNT_UNIT_0);
     pcnt_counter_clear(PCNT_UNIT_1);
     pcnt_counter_clear(PCNT_UNIT_2);
-    pcnt_counter_clear(PCNT_UNIT_3);
+    pcnt_counter_clear(PCNT_UNIT_3);*/
 
     /*uint32_t SG0=0;
     uint32_t SG1=0;
     uint32_t SG2=0;
     uint32_t SG3=0;*/
+    /*for(int i=0; i<4;i++){
+        motor_speed[i]=-17902;
+    }*/
 
-    driver0.set_SGTHRS(1);
-    driver1.set_SGTHRS(1);
-    driver2.set_SGTHRS(1);
-    driver3.set_SGTHRS(1);
+    driver0.set_SGTHRS(40);
+    driver1.set_SGTHRS(10);
+    driver2.set_SGTHRS(3);
+    driver3.set_SGTHRS(15);
 
     driver0.set_TCOOLTHRS(0xFFFFF);
     driver1.set_TCOOLTHRS(0xFFFFF);
@@ -391,18 +404,30 @@ extern "C" void app_main(void){
     //gpio_set_level(ON_OFF_SWITCH,1);
 
     
-    xTaskCreate(g_code_parser,"parsing task",2048, NULL, tskIDLE_PRIORITY,NULL);
     //printf("%d\n", gpio_get_level(SILOVKA));
+    //motor_homing();
 
-    printf("jsem ready\n");
+    printf("ready\n");
     while(!gpio_get_level(SILOVKA)){
         
-        driver0.set_speed(motor_speed[0]); //0
-        driver1.set_speed(motor_speed[1]); //1
-        driver2.set_speed(motor_speed[2]); //2
-        driver3.set_speed(motor_speed[3]); //3
+        driver0.set_speed(MOTOR0/*motor_speed[0]*/); //0
+        driver1.set_speed(MOTOR1/*motor_speed[1]*/); //1
+        driver2.set_speed(MOTOR2/*motor_speed[2]*/); //2
+        driver3.set_speed(MOTOR3/*motor_speed[3]*/); //3
         
         vTaskDelay(10/portTICK_PERIOD_MS);
     } 
+    /*while(1){
+        printf("opto0: %d\n",gpio_get_level(static_cast<gpio_num_t>(35)));
+        printf("opto1: %d\n",gpio_get_level(static_cast<gpio_num_t>(34)));
+        printf("opto2: %d\n",gpio_get_level(static_cast<gpio_num_t>(39)));
+        printf("opto3: %d\n",gpio_get_level(static_cast<gpio_num_t>(36)));
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+    }
+    
+    int *val;
+    val = spiffs();
+
+    */
 }
     

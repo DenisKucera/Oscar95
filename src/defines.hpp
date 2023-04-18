@@ -2,6 +2,68 @@
 using namespace std;
 #include <atomic>
 
+#define OSCAR1 0   //Uživatel si zvolí používaného Oscara95
+#define OSCAR2 1   
+#define OSCAR3 0   
+
+#if OSCAR1
+   #define MOTOR0 motor_speed[0]
+   #define MOTOR1 motor_speed[1]
+   #define MOTOR2 motor_speed[2]
+   #define MOTOR3 motor_speed[3]
+
+   #define KONCOVY_DOJEZD_0          GPIO_NUM_35
+    #define KONCOVY_DOJEZD_1          GPIO_NUM_34
+    #define KONCOVY_DOJEZD_2          GPIO_NUM_39
+    #define KONCOVY_DOJEZD_3          GPIO_NUM_36
+
+    #define LED_ON_OFF 0
+
+    #define PWR_ON_OFF 1
+
+    #define WIFI "Oscar#1"
+
+#endif
+//
+
+#if OSCAR2
+  #define MOTOR0 motor_speed[0]
+   #define MOTOR1 motor_speed[1]
+   #define MOTOR2 motor_speed[2]
+   #define MOTOR3 motor_speed[3]
+
+   #define KONCOVY_DOJEZD_0          GPIO_NUM_35
+    #define KONCOVY_DOJEZD_1          GPIO_NUM_34
+    #define KONCOVY_DOJEZD_2          GPIO_NUM_39
+    #define KONCOVY_DOJEZD_3          GPIO_NUM_36
+
+    #define LED_ON_OFF 1
+
+    #define PWR_ON_OFF 0
+
+    #define WIFI "Oscar#2"
+
+#endif
+//
+
+#if OSCAR3
+  #define MOTOR0 motor_speed[0]
+   #define MOTOR1 motor_speed[1]
+   #define MOTOR2 motor_speed[2]
+   #define MOTOR3 motor_speed[3]
+
+   #define KONCOVY_DOJEZD_0          GPIO_NUM_35
+    #define KONCOVY_DOJEZD_1          GPIO_NUM_34
+    #define KONCOVY_DOJEZD_2          GPIO_NUM_39
+    #define KONCOVY_DOJEZD_3          GPIO_NUM_36
+
+    #define LED_ON_OFF 0
+
+    #define WIFI "Oscar#3"
+
+#endif
+//
+
 #define DRIVER_0_ADDRES           0
 #define DRIVER_1_ADDRES           1
 #define DRIVER_2_ADDRES           2
@@ -18,11 +80,6 @@ using namespace std;
 #define BUZZER                     GPIO_NUM_5
 #define ON_OFF_SWITCH              GPIO_NUM_14
 #define LED                        GPIO_NUM_2
-
-#define KONCOVY_DOJEZD_0          GPIO_NUM_35
-#define KONCOVY_DOJEZD_1          GPIO_NUM_34
-#define KONCOVY_DOJEZD_2          GPIO_NUM_39
-#define KONCOVY_DOJEZD_3          GPIO_NUM_36
 
 #define DIAG_PIN0                 GPIO_NUM_19
 #define DIAG_PIN1                 GPIO_NUM_21
@@ -65,8 +122,9 @@ std::atomic<int> motor_speed3;*/
 bool power_on_off;
 bool rucni_rizeni=false;
 
-int h_limits[4]={0,0,0,0};
-int l_limits[4]={0,0,0,0};
+bool h_limits[4]={0,0,0,0};
+bool l_limits[4]={0,0,0,0};
+bool stall[4]={0,0,0,0};
 
 /*int16_t driver0_const=10; //139,149
 int16_t driver1_const=250; //558,568
