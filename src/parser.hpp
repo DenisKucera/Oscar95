@@ -222,6 +222,7 @@ void g_code_parser(void* param){
             }
             else if(init_gcode){
                 bool homing=false;
+                printf("homing false\n");
                 for(int i=0; i<max; i++){
                     switch (g_code[i]){
                     case 'G':{
@@ -251,6 +252,7 @@ void g_code_parser(void* param){
                                 case 2:
                                     printf("02\n");
                                     motor_homing();
+                                    printf("homing true\n");
                                     homing=true;
                                     break;  
                                 case 11:
@@ -405,13 +407,14 @@ void g_code_parser(void* param){
                                     } 
                                 }
                             } 
-                            if((set[0] || stall[0]) && (set[1] || stall[1]) && (set[2] || stall[2]) && (set[3] || stall[3])){
-                                for(int i=0; i<4; i++){
+                            if(set[0] || /*stall[0]) && (*/set[1] || /*stall[1]) && (*/set[2] || /*stall[2]) && (*/set[3] /*|| stall[3])*/){
+                                /*for(int i=0; i<4; i++){
                                     stall[i]=false;
-                                }
+                                }*/
                                 speed_done=false;
+                                printf("pozice nastavena\n");
                                 }
-                            if(motor_speed[0]==0 && motor_speed[1]==0 && motor_speed[2]==0 && motor_speed[3]==0){speed_done=false;}
+                            //if(motor_speed[0]==0 && motor_speed[1]==0 && motor_speed[2]==0 && motor_speed[3]==0){speed_done=false;}
                             vTaskDelay(10 / portTICK_PERIOD_MS);
                         }//for(q)
                         

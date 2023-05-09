@@ -2,8 +2,8 @@
 using namespace std;
 #include <atomic>
 
-#define OSCAR1 0   //Uživatel si zvolí používaného Oscara95
-#define OSCAR2 1   
+#define OSCAR1 1   //Uživatel si zvolí používaného Oscara95
+#define OSCAR2 0   
 #define OSCAR3 0   
 
 #if OSCAR1
@@ -22,6 +22,11 @@ using namespace std;
     #define PWR_ON_OFF 1
 
     #define WIFI "Oscar#1"
+
+    #define SG_THRS0 40
+    #define SG_THRS1 10
+    #define SG_THRS2 3
+    #define SG_THRS3 15
 
 #endif
 //
@@ -43,6 +48,11 @@ using namespace std;
 
     #define WIFI "Oscar#2"
 
+    #define SG_THRS0 40
+    #define SG_THRS1 10
+    #define SG_THRS2 3
+    #define SG_THRS3 15
+
 #endif
 //
 
@@ -59,7 +69,14 @@ using namespace std;
 
     #define LED_ON_OFF 0
 
+    #define PWR_ON_OFF 1
+
     #define WIFI "Oscar#3"
+
+    #define SG_THRS0 40
+    #define SG_THRS1 10
+    #define SG_THRS2 3
+    #define SG_THRS3 15
 
 #endif
 //

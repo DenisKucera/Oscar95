@@ -27,7 +27,7 @@
 #include "soc/pcnt_reg.h"
 #include "soc/pcnt_struct.h"
 #include "driver/periph_ctrl.h"
-#include "soc/rtc_wdt.h"
+#include "hal/wdt_hal.h"//"soc/rtc_wdt.h"
 #include "parser.hpp"
 #include <iostream>
 #include <fstream>
@@ -40,7 +40,7 @@ using namespace std;
 static void initGridUi(){
     using namespace gridui;
     // Initialize WiFi
-    WiFi::startAp(WIFI,"");     //esp vytvoří wifi sít  //OSCAR
+    WiFi::startAp(WIFI,"");     //esp vytvoří wifi sít 
     // WiFi::connect("Jmeno wifi", "Heslo");    //připojení do místní sítě
     
     // Initialize RBProtocol
@@ -178,13 +178,13 @@ static void initGridUi(){
     driver.set_IHOLD_IRUN (iRun, iHold);             //proud IHOLD =0, IRUN = 8/32 (při stání je motor volně otočný)
    }
 
-   bool garbo(){
+   /*bool led_on_off(){
     if (LED_ON_OFF == 1) {
         return !power_on_off;
     } else {
         return power_on_off;
     }
-   }
+   }*/
 
 extern "C" void app_main(void){ 
 
@@ -226,7 +226,7 @@ extern "C" void app_main(void){
     gpio_set_level(LED,LED_ON_OFF); //1 pro Oscar#2
     power_on_off=gpio_get_level(LED);
     bool once=true;
-    while(garbo()){ //bez (!)
+    while(power_on_off){ //bez (!)
         while(once){
         printf("Oscar95 OFF state\n");
         printf("press button to start!\n");
@@ -349,10 +349,10 @@ extern "C" void app_main(void){
         motor_speed[i]=-17902;
     }*/
 
-    driver0.set_SGTHRS(40);
-    driver1.set_SGTHRS(10);
-    driver2.set_SGTHRS(3);
-    driver3.set_SGTHRS(15);
+    driver0.set_SGTHRS(SG_THRS0);
+    driver1.set_SGTHRS(SG_THRS1);
+    driver2.set_SGTHRS(SG_THRS2);
+    driver3.set_SGTHRS(SG_THRS3);
 
     driver0.set_TCOOLTHRS(0xFFFFF);
     driver1.set_TCOOLTHRS(0xFFFFF);
